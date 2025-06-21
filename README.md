@@ -96,10 +96,3 @@ git clone https://github.com/seu-usuario/seu-repositorio.git
 ./mvnw spring-boot:run
 ```
 Ou rode pela sua IDE (Eclipse, IntelliJ, VS Code).
-
-## ✅ Melhorias futuras (sugestões):
-
-- Implementar geração de shortUrls mais robusta
-- Adicionar validação de URLs
-- Implementar testes unitários
-- Adicionar versionamento de API (ex: `/api/v1/`)
