@@ -8,10 +8,10 @@ import com.pedroAlencar.url_shortner.services.urlService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-
 
 
 @RestController
@@ -24,23 +24,45 @@ public class urlController {
     @Autowired
     private urlRepository urlRepository;
     
-    @PostMapping
-    public String createShortUrl(@RequestBody String longUrl) {
-        String shortUrl = urlService.getLongUrl(longUrl);
+    @PostMapping("/create-url{longUrl}")
+    public String createShortUrl(@RequestParam String longUrl) {
+        String shortUrl = urlService.createShortUrl(longUrl);
+        
         urlModel url = new urlModel(longUrl, shortUrl);
-
         urlRepository.save(url);
         
         return shortUrl;
     }
 
-    @GetMapping
-    public String getLongUrl(@RequestBody String shortUrl) {
+    @GetMapping("/get-url{shortUrl}")
+    public String getLongUrl(@RequestParam String shortUrl) {
         
-        urlModel url = urlRepository.findByShortUrl(shortUrl)
-            .orElseThrow(() -> new RuntimeException("Short URL not found"));
+        String longUrl = urlService.getLongUrl(shortUrl);
 
-        return url.getLongUrl();
+        return longUrl;
+    }
+
+    @GetMapping
+    public String listAllUrl() {
+        StringBuilder response = new StringBuilder();
+        for (urlModel url : urlRepository.findAll()) {
+            response.append("Long URL: ").append(url.getLongUrl())
+                    .append(", Short URL: ").append(url.getShortUrl())
+                    .append("\n");
+        }
+        return response.toString();
+    }
+    
+    @DeleteMapping("delete-by-longurl{longUrl}")
+    public String deleteByLongUrl(@RequestParam String longUrl) {
+        urlRepository.deleteByLongUrl(longUrl);
+        return "URL deleted successfully: " + longUrl;
+    }
+
+    @DeleteMapping("delete-by-shorturl{shortUrl}")
+    public String deleteByShortUrl(@RequestParam String shortUrl) {
+        urlRepository.deleteByShortUrl(shortUrl);
+        return "URL deleted successfully: " + shortUrl;
     }
     
     
